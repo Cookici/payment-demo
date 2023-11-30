@@ -25,11 +25,16 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     @Autowired
     private ProductMapper productMapper;
 
+    /**
+     * 微信
+     * @param productId
+     * @return
+     */
     @Override
-    public OrderInfo createOrderByProductId(Long productId) {
+    public OrderInfo createOrderByProductIdWx(Long productId) {
 
         //查找已存在但未支付的订单
-        OrderInfo orderInfo = getNoPayOrderByProduct(productId);
+        OrderInfo orderInfo = getNoPayOrderByProductWx(productId);
         if (orderInfo != null) {
             return orderInfo;
         }
@@ -43,6 +48,40 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         orderInfo.setTitle(product.getTitle());
         orderInfo.setOrderNo(OrderNoUtils.getOrderNo());
         orderInfo.setProductId(productId);
+        orderInfo.setPaymentType(PayType.WXPAY.getType());
+        orderInfo.setTotalFee(product.getPrice());
+        orderInfo.setOrderStatus(OrderStatus.NOTPAY.getType());
+        log.info("生成订单：{}", orderInfo);
+
+        //存入数据库
+        baseMapper.insert(orderInfo);
+
+        return orderInfo;
+    }
+
+    /**
+     * 阿里
+     * @param productId
+     * @return
+     */
+    @Override
+    public OrderInfo createOrderByProductIdAli(Long productId) {
+        //查找已存在但未支付的订单
+        OrderInfo orderInfo = getNoPayOrderByProductAli(productId);
+        if (orderInfo != null) {
+            return orderInfo;
+        }
+
+
+        //获取商品信息
+        Product product = productMapper.selectById(productId);
+
+        //生成订单
+        orderInfo = new OrderInfo();
+        orderInfo.setTitle(product.getTitle());
+        orderInfo.setOrderNo(OrderNoUtils.getOrderNo());
+        orderInfo.setProductId(productId);
+        orderInfo.setPaymentType(PayType.ALIPAY.getType());
         orderInfo.setTotalFee(product.getPrice());
         orderInfo.setOrderStatus(OrderStatus.NOTPAY.getType());
         log.info("生成订单：{}", orderInfo);
@@ -90,10 +129,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         baseMapper.update(orderInfo, new LambdaQueryWrapper<OrderInfo>().eq(OrderInfo::getOrderNo, orderNo));
     }
 
+    /**
+     * 微信查询订单状态
+     * @param orderNo
+     * @return
+     */
     @Override
-    public String getOrderStatus(String orderNo) {
+    public String getOrderStatusWx(String orderNo) {
 
-        OrderInfo orderInfo = baseMapper.selectOne(new LambdaQueryWrapper<OrderInfo>().eq(OrderInfo::getOrderNo, orderNo));
+        OrderInfo orderInfo = baseMapper.selectOne(new LambdaQueryWrapper<OrderInfo>().eq(OrderInfo::getOrderNo, orderNo).eq(OrderInfo::getPaymentType,PayType.WXPAY.getType()));
         if (orderInfo == null) {
             return null;
         }
@@ -101,17 +145,35 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     /**
-     * 查询创建超过minutes分钟并且为支付的订单
+     * wx查询创建超过minutes分钟并且为支付的订单
      *
      * @param minutes
      * @return
      */
     @Override
-    public List<OrderInfo> getNoPayOrderByDuration(int minutes) {
+    public List<OrderInfo> getNoPayOrderByDurationWx(int minutes) {
 
         Instant instant = Instant.now().minus(Duration.ofMinutes(minutes));
         LambdaQueryWrapper<OrderInfo> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(OrderInfo::getOrderStatus, OrderStatus.NOTPAY.getType());
+        queryWrapper.eq(OrderInfo::getPaymentType,PayType.WXPAY.getType());
+        queryWrapper.le(OrderInfo::getCreateTime, instant);
+        return baseMapper.selectList(queryWrapper);
+    }
+
+    /**
+     * ali查询创建超过minutes分钟并且为支付的订单
+     *
+     * @param minutes
+     * @return
+     */
+    @Override
+    public List<OrderInfo> getNoPayOrderByDurationAli(int minutes) {
+
+        Instant instant = Instant.now().minus(Duration.ofMinutes(minutes));
+        LambdaQueryWrapper<OrderInfo> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(OrderInfo::getOrderStatus, OrderStatus.NOTPAY.getType());
+        queryWrapper.eq(OrderInfo::getPaymentType,PayType.ALIPAY.getType());
         queryWrapper.le(OrderInfo::getCreateTime, instant);
         return baseMapper.selectList(queryWrapper);
     }
@@ -122,15 +184,46 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     }
 
     /**
-     * 防止生成重复订单对象
+     * 阿里查询订单状态
+     * @param orderNo
+     * @return
+     */
+    @Override
+    public String getOrderStatusAli(String orderNo) {
+        OrderInfo orderInfo = baseMapper.selectOne(new LambdaQueryWrapper<OrderInfo>().eq(OrderInfo::getOrderNo, orderNo).eq(OrderInfo::getPaymentType,PayType.ALIPAY.getType()));
+        if (orderInfo == null) {
+            return null;
+        }
+        return orderInfo.getOrderStatus();
+    }
+
+    /**
+     * 微信防止生成重复订单对象
      *
      * @param productId
      * @return
      */
-    private OrderInfo getNoPayOrderByProduct(Long productId) {
+    private OrderInfo getNoPayOrderByProductWx(Long productId) {
         LambdaQueryWrapper<OrderInfo> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(OrderInfo::getProductId, productId);
         queryWrapper.eq(OrderInfo::getOrderStatus, OrderStatus.NOTPAY.getType());
+        queryWrapper.eq(OrderInfo::getPaymentType, PayType.WXPAY.getType());
+        // queryWrapper.eq(OrderInfo::getUserId,userId);
+        return baseMapper.selectOne(queryWrapper);
+    }
+
+
+    /**
+     * 阿里防止生成重复订单对象
+     *
+     * @param productId
+     * @return
+     */
+    private OrderInfo getNoPayOrderByProductAli(Long productId) {
+        LambdaQueryWrapper<OrderInfo> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(OrderInfo::getProductId, productId);
+        queryWrapper.eq(OrderInfo::getOrderStatus, OrderStatus.NOTPAY.getType());
+        queryWrapper.eq(OrderInfo::getPaymentType, PayType.ALIPAY.getType());
         // queryWrapper.eq(OrderInfo::getUserId,userId);
         return baseMapper.selectOne(queryWrapper);
     }

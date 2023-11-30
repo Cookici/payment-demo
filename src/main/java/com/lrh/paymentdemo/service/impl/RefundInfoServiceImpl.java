@@ -1,9 +1,12 @@
 package com.lrh.paymentdemo.service.impl;
 
+import com.alipay.v3.model.AlipayTradeRefundApplyResponseModel;
+import com.alipay.v3.model.AlipayTradeRefundResponseModel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lrh.paymentdemo.entity.OrderInfo;
 import com.lrh.paymentdemo.entity.RefundInfo;
+import com.lrh.paymentdemo.enums.alipay.AliRefundStatus;
 import com.lrh.paymentdemo.mapper.RefundInfoMapper;
 import com.lrh.paymentdemo.service.OrderInfoService;
 import com.lrh.paymentdemo.service.RefundInfoService;
@@ -43,6 +46,7 @@ public class RefundInfoServiceImpl extends ServiceImpl<RefundInfoMapper, RefundI
 
     /**
      * 申请退款
+     *
      * @param refund
      */
     @Override
@@ -64,6 +68,7 @@ public class RefundInfoServiceImpl extends ServiceImpl<RefundInfoMapper, RefundI
 
     /**
      * 退款完成回调
+     *
      * @param refundNotification
      */
     @Override
@@ -79,6 +84,27 @@ public class RefundInfoServiceImpl extends ServiceImpl<RefundInfoMapper, RefundI
 
         //将全部结果存入数据库中
         refundInfo.setContentNotify(String.valueOf(refundNotification));
+
+        baseMapper.update(refundInfo, refundInfoLambdaQueryWrapper);
+    }
+
+    /**
+     * 申请退款
+     *
+     * @param refund
+     */
+    @Override
+    public void updateRefund(AlipayTradeRefundResponseModel refund, String refundNo, String type) {
+        //根据退款单编号修改退款单
+        LambdaQueryWrapper<RefundInfo> refundInfoLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        refundInfoLambdaQueryWrapper.eq(RefundInfo::getRefundNo, refundNo);
+
+        //设置要修改的字段
+        RefundInfo refundInfo = new RefundInfo();
+        refundInfo.setRefundStatus(type);
+
+        //将全部结果存入数据库中
+        refundInfo.setContentReturn(String.valueOf(refund));
 
         baseMapper.update(refundInfo, refundInfoLambdaQueryWrapper);
     }

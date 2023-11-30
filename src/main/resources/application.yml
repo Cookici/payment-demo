@@ -22,8 +22,8 @@ mybatis-plus:
 
 
 # 微信支付相关参数
-# 商户号
 wxpay:
+  # 商户号
   mch-id: 1558950191
   # 商户API证书序列号
   mch-serial-no: 34345964330B66427E0D3D28826C4993C77E631F
@@ -38,4 +38,23 @@ wxpay:
   # 微信服务器地址
   domain: https://api.mch.weixin.qq.com
   # 接收结果通知地址
-  notify-domain: https://c388-183-230-12-210.ngrok-free.app/
+  notify-domain:  https://5c81-183-230-12-210.ngrok-free.app/
+
+# 支付宝支付相关参数
+alipay:
+  #应用ID
+  app-id: 9021000132639645
+  #商户PID
+  seller-id: 2088721023200858
+  #支付宝网关
+  gateway-url: https://openapi-sandbox.dl.alipaydev.com
+  #商户私钥
+  merchant-private-key: MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCYG7OA2RNGmUB41EDMlEZM8I1RC+das+UOo30/040xG2TZQWgiPiK+QXa0ctTksCyE1P8VLdJHr3i/AQLeWHLPlHKwdcpjHSVGCRuLNXXs13lE8uB8L8BjxTE0XAD7gaWjzjyZT/kqCYulqOEkOV7JWhXP9E7l6JtfKn3XuA+M031b/D26JMo84HuKxIRy+m/BAXKtEodE4b1sMtZrE8LLVQUq++nAMReUVPvsx3O6qeBwFuqwuunCSnkj/b4zqFcNF4YL+Psza1WTTQSclGyvlUXSHxzaq+QyWQDm3b5hzVTUTa0GgQgZlzFjG7WLyr3u2r/MBunetC3xeo9/vsZnAgMBAAECggEAH8FYvkOTZJ/F9/PH+23RJ2ro9cyYZjU8UswK7/JIfcIMUdb32H5EXpfoIk/+5idpg+m7vz4rsk+N08JwSN8KSQ/iybgtoneJOo/YMj3c+q8ZYC2cdBC8B5g5Z4b1pYwxensp54/sorwPbWxOZHOduEeYWivU9OaU2U9Tql+Az5NcpM5ohgVMStaGLDpwd8eNBmfTglB0sPD8p+UYxM9cPGsfgmIhIMfEY2xQQvDlJPgYrOitCbw+sJsOuo2wdg4dil0KigBFWLX1idiRghqPCvUdWdbIpNi3Q+ssh5cq0SBm/hq1sDjb2WvtSKkYsCE6spitRpXr1d05Xq5XSYz9UQKBgQDcwO0bLjV7Cuz5AXiPdutqAp3y/mOrsWvAeBoUxEnSuIlJ3AIWnJc6n1Y8iFnwoQy27ZCbjJSZj9ugBVLC2hOiK5/YxMmrAgJ1DTROQieg5Ey7SlzC7JAWHNqJYoZtULsiRQpYwhTUByB8NHiZxTMoQf67+p5ekAVc9i0RPQRdewKBgQCwZPcpDMe2LSVfrtGmlSY+/9KkWkxiFHVlmtBVZKAUwCTVXPDaTpTdO+7Zc5ln5a/qvD2ZrVAHu7MUcKaCe8X18ph6g94COc4Y6+sR/FikUtIiSzVzWJ86G5XiYNV06THHaZ9jx5yprrPNwc76hceeSRF0gfpK8k6VLxlwynzpBQKBgFN6hW9k3waDkC9ttfiSoN161d4BAxH3SucCw+IchEoyTIBouUVxu+KIRKUpbtGHJXa7iZa456zWcNgniy9yJkCKPK1NZXHMlb9L2f7KF5BJJRciPMfdi3NBQAb6AhmukMWZ1BrScevoMgmmEgEcSIctxbWyRVc/ITgRQ+Oj7lWnAoGAEQCaZkWKFoBBgviJ0sG7nwTvm9HsXOPV8QY8II8DcxyWME62FITQioaVXjZrSf10uG6OjXqMJUKtX0IAesFNcoiAtAZz5skFmZdb4C7vqF8nTBDtxQF8z5ALIXft+0fi+XKv32FFM4HYaPPObI1qkVI/sXg51PGIK48Pp7SM17UCgYBv0t38Mw53LBbycw6uYKe6FOeo2I9a4nqp6Mgddr/GTFACSoHr78LA6AbpU7Q1aB4ZqO4anGNjW87wyYYxUmTsyKwZkJ4KsUkv0NLrDdQhtX6/KEQ/PrajGuVjqvtvA/m1UMMdDP9fCNKlX26GDNJSscRdcko0yWF6fZtypDb8xA==
+  #支付宝公钥
+  alipay-public-key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmTxSQ3bfY2Pp7OeeQcm1ZVFgt7SH/0oUZtlzEL/UkvSHECCQul1nJEZY7DkdClBxiBfrmGUAzOoQgTCKfpwDLGTpksK2GVtF+4FJVyTmRFUhkhdgWoELxfU6sLXVcM5N5yXQJEhlUK01Iq55V/AxaR4Tkw4tYbTSEsanhcNZe59CuawMmqW3UYRUbDXoug//2petLKnWxr6MK6QYQdnufFsL4jGYz5ULnHZnwVIii8Nv5NSIWl2jhVFbvipdHOeZbgfe4g2euSTHArq6NjDECLoSsStuX3/ZGpSaHeIPppGLK38wGdaZz7F+TRqml+zW8deRHKu5Pb4/9ot2/2AdZwIDAQAB
+  #页面跳转同步通知页面路径
+  return-url: http://localhost:8080/#/success
+  #服务器异步通知页面路径
+  notify-url:   https://5c81-183-230-12-210.ngrok-free.app/api/ali-pay/trade/notify
+  #接口内容加密
+  content-key: 3QhoHPLYAEGAaSUickNYoQ==

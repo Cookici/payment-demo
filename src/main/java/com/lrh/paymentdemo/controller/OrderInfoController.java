@@ -43,7 +43,7 @@ public class OrderInfoController {
     @ApiOperation("查询订单状态")
     @GetMapping("/query-order-status/{orderNo}")
     public R<Object> queryOrderStatus(@PathVariable String orderNo) {
-        String orderStatus = orderInfoService.getOrderStatus(orderNo);
+        String orderStatus = orderInfoService.getOrderStatusWx(orderNo);
         if (OrderStatus.SUCCESS.getType().equals(orderStatus)) {
             return R.ok().code(0).message("支付成功");
         }

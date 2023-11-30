@@ -8,7 +8,9 @@ import java.util.List;
 
 public interface OrderInfoService extends IService<OrderInfo> {
 
-    OrderInfo createOrderByProductId(Long productId);
+    OrderInfo createOrderByProductIdWx(Long productId);
+
+    OrderInfo createOrderByProductIdAli(Long productId);
 
     void savaCodeUrl(String orderNo,String codeUrl);
 
@@ -16,9 +18,13 @@ public interface OrderInfoService extends IService<OrderInfo> {
 
     void updateStatusByOrderNo(String orderNo, OrderStatus orderStatus);
 
-    String getOrderStatus(String orderNo);
+    String getOrderStatusWx(String orderNo);
 
-    List<OrderInfo> getNoPayOrderByDuration(int minutes);
+    List<OrderInfo> getNoPayOrderByDurationWx(int minutes);
+
+    List<OrderInfo> getNoPayOrderByDurationAli(int minutes);
 
     OrderInfo getOrderByOrderNo(String orderNo);
+
+    String getOrderStatusAli(String orderNo);
 }

@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
@@ -78,7 +79,7 @@ public class WxPayServiceImpl implements WxPayService {
     @Override
     public Map<String, Object> nativePay(Long productId) {
 
-        OrderInfo orderInfo = orderInfoService.createOrderByProductId(productId);
+        OrderInfo orderInfo = orderInfoService.createOrderByProductIdWx(productId);
         String codeUrl = orderInfo.getCodeUrl();
         if (orderInfo != null && StringUtils.hasText(codeUrl)) {
             log.info("二维码已保存 codeUrl ===> {} ", codeUrl);
@@ -113,7 +114,12 @@ public class WxPayServiceImpl implements WxPayService {
 
     }
 
+    /**
+     * 微信检查订单状态
+     * @param transaction
+     */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void processOrder(Transaction transaction) {
 
         log.info("处理订单");
@@ -129,7 +135,7 @@ public class WxPayServiceImpl implements WxPayService {
             try {
                 //处理重复的通知
                 //接口调用的幂等性：无论接口被调用多少次，产生的结果是一致的
-                String orderStatus = orderInfoService.getOrderStatus(orderNo);
+                String orderStatus = orderInfoService.getOrderStatusWx(orderNo);
                 if (!OrderStatus.NOTPAY.getType().equals(orderStatus)) {
                     return;
                 }
@@ -249,6 +255,10 @@ public class WxPayServiceImpl implements WxPayService {
         return service.queryByOutRefundNo(queryRefundByOutRefundNoRequest);
     }
 
+    /**
+     * 微信退款
+     * @param refundNotification
+     */
     @Override
     public void processRefund(RefundNotification refundNotification) {
         log.info("退款订单");
@@ -258,7 +268,7 @@ public class WxPayServiceImpl implements WxPayService {
         if (lock.tryLock()) {
 
             try {
-                String orderStatus = orderInfoService.getOrderStatus(orderNo);
+                String orderStatus = orderInfoService.getOrderStatusWx(orderNo);
                 if (!OrderStatus.REFUND_PROCESSING.getType().equals(orderStatus)) {
                     return;
                 }
